@@ -26,7 +26,13 @@ openshift_use_flannel=true
 [masters]
 $MASTER_HOSTNAME
 
+[masters:vars]
+flannel_interface=eth1
+
 # host group for nodes
 [nodes]
 $MASTER_HOSTNAME openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
 $NODE_HOSTNAMES
+
+[nodes:vars]
+flannel_interface=eth1
