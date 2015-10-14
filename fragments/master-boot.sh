@@ -22,6 +22,9 @@ retry yum install -y http://cbs.centos.org/kojifiles/packages/docker/1.6.2/4.git
 echo "INSECURE_REGISTRY='--insecure-registry 0.0.0.0/0'" >> /etc/sysconfig/docker
 systemctl enable docker
 
+# Install flannel >= 0.3
+retry yum -y install https://kojipkgs.fedoraproject.org//packages/flannel/0.5.3/5.fc24/x86_64/flannel-0.5.3-5.fc24.x86_64.rpm
+
 # NOTE: install the right Ansible version on RHEL7.1 and Centos 7.1:
 retry yum -y install \
     http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
@@ -42,17 +45,5 @@ systemctl restart iptables
 # NOTE: Ignore the known_hosts check/propmt for now:
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook --inventory /var/lib/ansible-inventory playbooks/byo/config.yml
-
-# Configure flannel
-cd /root
-cp /etc/origin/node/system:node:$(hostname).key etcd.key
-cp /etc/origin/node/system:node:$(hostname).crt etcd.crt
-CA=/etc/origin/node/ca.crt
-CERT=$(pwd)/etcd.crt
-KEY=$(pwd)/etcd.key
-curl -L --cacert $CA --cert $CERT --key $KEY https://openshift-master.example.com:4001/v2/keys/coreos.com/network/config -XPUT --data-urlencode value@flannel-config.json
-
-
-ansible -i /var/lib/ansible-inventory all -a 'docker-bridge-setup'
 
 echo "OpenShift has been installed."

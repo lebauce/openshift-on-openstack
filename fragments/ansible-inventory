@@ -20,6 +20,7 @@ osm_host_subnet_length=$CONTAINER_SUBNET_LENGTH
 openshift_master_portal_net=$CONTAINER_NETWORK_CIDR
 
 openshift_use_openshift_sdn=false
+openshift_use_flannel=true
 
 # host group for masters
 [masters]

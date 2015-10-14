@@ -141,21 +141,6 @@ resources:
         ssh_authorized_keys:
         - {get_param: ansible_public_key}
         write_files:
-        - path: /usr/bin/docker-bridge-setup
-          permissions: 0755
-          content: {get_file: fragments/docker-bridge-setup.sh}
-        - path: /root/flannel-sysconfig
-          permissions: 0644
-          content:
-            str_replace:
-              params:
-                $HOSTNAME:
-                  str_replace:
-                    template: "HOST-SUFFIX.example.com"
-                    params:
-                      HOST: {get_param: hostname_prefix}
-                      SUFFIX: {get_attr: [random_hostname_suffix, value]}
-              template: {get_file: fragments/flannel-sysconfig}
         - path: /usr/bin/retry
           permissions: 0755
           content: {get_file: fragments/retry.sh}
@@ -249,3 +234,4 @@ outputs:
   ip_address:
     description: IP address of the node
     value: {get_attr: [floating_ip, floating_ip_address]}
+
