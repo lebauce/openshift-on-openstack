@@ -61,7 +61,7 @@ parameters:
     type: string
     hidden: true
 
-  hostname_prefix:
+  hostname:
     type: string
 
   ansible_public_key:
@@ -73,21 +73,10 @@ parameters:
 
 resources:
 
-  random_hostname_suffix:
-    type: OS::Heat::RandomString
-    properties:
-      character_classes: [{"min": 5, "class": "lowercase"}]
-      length: 5
-
   host:
     type: OS::Nova::Server
     properties:
-      name:
-        str_replace:
-          template: "HOST-SUFFIX.example.com"
-          params:
-            HOST: {get_param: hostname_prefix}
-            SUFFIX: {get_attr: [random_hostname_suffix, value]}
+      name: {get_param: hostname}
       admin_user: {get_param: ssh_user}
       image: {get_param: image}
       flavor: {get_param: flavor}
@@ -121,18 +110,8 @@ resources:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
-        hostname:
-          str_replace:
-            template: "HOST-SUFFIX.example.com"
-            params:
-              HOST: {get_param: hostname_prefix}
-              SUFFIX: {get_attr: [random_hostname_suffix, value]}
-        fqdn:
-          str_replace:
-            template: "HOST-SUFFIX.example.com"
-            params:
-              HOST: {get_param: hostname_prefix}
-              SUFFIX: {get_attr: [random_hostname_suffix, value]}
+        hostname: {get_param: hostname}
+        fqdn: {get_param: hostname}
 
   included_files:
     type: OS::Heat::CloudConfig
@@ -149,12 +128,7 @@ resources:
             str_replace:
               params:
                 $NODE_IP: {get_attr: [floating_ip, floating_ip_address]}
-                $NODE_HOSTNAME:
-                  str_replace:
-                    template: "HOST-SUFFIX.example.com"
-                    params:
-                      HOST: {get_param: hostname_prefix}
-                      SUFFIX: {get_attr: [random_hostname_suffix, value]}
+                $NODE_HOSTNAME: {get_param: hostname}
               template: {get_file: fragments/etc-node-hosts}
         - path: /etc/sysconfig/network-scripts/ifcfg-eth1
           content:
@@ -216,21 +190,15 @@ resources:
 outputs:
   hostname:
     description: Hostname of this OpenShift node
-    value:
-      str_replace:
-        template: "HOST-SUFFIX.example.com"
-        params:
-          HOST: {get_param: hostname_prefix}
-          SUFFIX: {get_attr: [random_hostname_suffix, value]}
+    value: {get_param: hostname}
   etc_hosts:
     description: A hostname/IP entry for /etc/hosts
     value:
       str_replace:
-        template: "IP HOST-SUFFIX.example.com"
+        template: "IP HOST"
         params:
           IP: {get_attr: [floating_ip, floating_ip_address]}
-          HOST: {get_param: hostname_prefix}
-          SUFFIX: {get_attr: [random_hostname_suffix, value]}
+          HOST: {get_param: hostname}
   ip_address:
     description: IP address of the node
     value: {get_attr: [floating_ip, floating_ip_address]}

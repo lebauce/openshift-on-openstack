@@ -143,7 +143,7 @@ resources:
   dns_host:
     type: dns.yaml
     properties:
-      image: {get_param: server_image}
+      image: openshift-master
       flavor: {get_param: flavor}
       key_name: {get_param: ssh_key_name}
       ssh_user: {get_param: ssh_user}
@@ -155,7 +155,7 @@ resources:
       port: {get_resource: dnsmasq_port}
 
   openshift_master:
-    depends_on: [dns_host, openshift_nodes]
+    depends_on: [dns_host, openshift_node1, openshift_node2]
     type: master.yaml
     properties:
       image: {get_param: server_image}
@@ -182,39 +182,53 @@ resources:
       node_hostnames:
         list_join:
         - "\n"
-        - {get_attr: [openshift_nodes, outputs_list, hostname]}
+        - [{get_attr: [openshift_node1, hostname]}, {get_attr: [openshift_node2, hostname]}]
       node_etc_hosts:
         list_join:
         - "\n"
-        - {get_attr: [openshift_nodes, outputs_list, etc_hosts]}
+        - [{get_attr: [openshift_node1, etc_hosts]}, {get_attr: [openshift_node2, etc_hosts]}]
       container_network_cidr: {get_param: container_network_cidr}
       container_subnet_length: {get_param: container_subnet_length}
 
-  openshift_nodes:
+  openshift_node1:
     depends_on: external_router_interface
-    type: OS::Heat::AutoScalingGroup
+    type: node.yaml
     properties:
-      desired_capacity: {get_param: node_count}
-      min_size: 0
-      max_size: 100
-      resource:
-        type: node.yaml
-        properties:
-          image: {get_param: server_image}
-          flavor: {get_param: flavor}
-          key_name: {get_param: ssh_key_name}
-          ssh_user: {get_param: ssh_user}
-          external_network: {get_param: external_network}
-          dns_ip: {get_attr: [dnsmasq_floating_ip, floating_ip_address]}
-          fixed_network: {get_resource: fixed_network}
-          fixed_subnet: {get_resource: fixed_subnet}
-          container_network: {get_resource: container_network}
-          container_subnet: {get_resource: container_subnet}
-          container_security_group: {get_resource: container_security_group}
-          rhn_username: {get_param: rhn_username}
-          rhn_password: {get_param: rhn_password}
-          hostname_prefix: "openshift-node"
-          ansible_public_key: {get_attr: [ansible_keys, public_key]}
+      image: openshift-node1
+      flavor: {get_param: flavor}
+      key_name: {get_param: ssh_key_name}
+      ssh_user: {get_param: ssh_user}
+      external_network: {get_param: external_network}
+      dns_ip: {get_attr: [dnsmasq_floating_ip, floating_ip_address]}
+      fixed_network: {get_resource: fixed_network}
+      fixed_subnet: {get_resource: fixed_subnet}
+      container_network: {get_resource: container_network}
+      container_subnet: {get_resource: container_subnet}
+      container_security_group: {get_resource: container_security_group}
+      rhn_username: {get_param: rhn_username}
+      rhn_password: {get_param: rhn_password}
+      hostname: "openshift-node1.example.com"
+      ansible_public_key: {get_attr: [ansible_keys, public_key]}
+
+  openshift_node2:
+    depends_on: external_router_interface
+    type: node.yaml
+    properties:
+      image: openshift-node2
+      flavor: {get_param: flavor}
+      key_name: {get_param: ssh_key_name}
+      ssh_user: {get_param: ssh_user}
+      external_network: {get_param: external_network}
+      dns_ip: {get_attr: [dnsmasq_floating_ip, floating_ip_address]}
+      fixed_network: {get_resource: fixed_network}
+      fixed_subnet: {get_resource: fixed_subnet}
+      container_network: {get_resource: container_network}
+      container_subnet: {get_resource: container_subnet}
+      container_security_group: {get_resource: container_security_group}
+      rhn_username: {get_param: rhn_username}
+      rhn_password: {get_param: rhn_password}
+      hostname: "openshift-node2.example.com"
+      ansible_public_key: {get_attr: [ansible_keys, public_key]}
 
   dnsmasq_port:
     type: OS::Neutron::Port
@@ -323,8 +337,8 @@ outputs:
     description: URL entrypoint to the OpenShift API
     value: {get_attr: [openshift_master, api_url]}
   host_ips:
-    description: IP addresses of the OpenShift nodes
-    value: {get_attr: [openshift_nodes, outputs_list, ip_address]}
+     description: IP addresses of the OpenShift nodes
+     value: [{get_attr: [openshift_node1, ip_address]}, {get_attr: [openshift_node2, ip_address]}]
   # scale_up_url:
   #   description: A URL that triggers a scale up event on HTTP POST
   #   value: {get_attr: [scale_up, alarm_url]}
