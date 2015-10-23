@@ -130,6 +130,29 @@ resources:
       value_specs:
         port_security_enabled: false
 
+  openshift_vol1:
+    type: OS::Cinder::Volume
+    properties:
+      size: 10
+
+  openshift_vol2:
+    type: OS::Cinder::Volume
+    properties:
+      size: 5
+
+  openshift_attach_vol1:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      instance_uuid: { get_resource: host }
+      volume_id: { get_resource: openshift_vol1 }
+      mountpoint: /dev/vdb
+
+  openshift_attach_vol2:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      instance_uuid: { get_resource: host }
+      volume_id: { get_resource: openshift_vol2 }
+      mountpoint: /dev/vdc
 
   init:
     type: OS::Heat::MultipartMime
@@ -211,6 +234,8 @@ resources:
             $MASTER_IP: {get_param: floating_ip}
             $OPENSHIFT_ANSIBLE_GIT_URL: {get_param: openshift_ansible_git_url}
             $OPENSHIFT_ANSIBLE_GIT_REV: {get_param: openshift_ansible_git_rev}
+            $OPENSHIFT_VOL1_ID: {get_resource: openshift_vol1}
+            $OPENSHIFT_VOL2_ID: {get_resource: openshift_vol2}
           template: {get_file: fragments/master-boot.sh}
 
   ansible_installer:
