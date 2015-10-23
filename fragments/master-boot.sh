@@ -20,6 +20,7 @@ su root -c "oadm manage-node --schedulable=true openshift-master.example.com"
 su root -c "oadm create-server-cert --signer-cert=/etc/origin/master/ca.crt --signer-key=/etc/origin/master/ca.key --signer-serial=/etc/origin/master/ca.serial.txt --hostnames='*.cloudapps.example.com' --cert=cloudapps.crt --key=cloudapps.key"
 cat cloudapps.crt cloudapps.key /etc/origin/master/ca.crt > cloudapps.router.pem
 su root -c "oadm router router --credentials=/etc/origin/master/openshift-router.kubeconfig --service-account=router"
+su root -c "oadm registry --config=/etc/origin/master/admin.kubeconfig --credentials=/etc/origin/master/openshift-registry.kubeconfig"
 su root -c "oadm manage-node --schedulable=false openshift-master.example.com"
 
 # Enable external connectivity
