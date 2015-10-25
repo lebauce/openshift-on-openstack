@@ -78,6 +78,7 @@ sleep 60
 
 oadm manage-node "$(hostname)" --schedulable=false
 
-
+htpasswd -b /etc/openshift/openshift-passwd admin admin
+su root -c "oadm policy add-role-to-user cluster-admin admin"
 
 echo "OpenShift has been installed."
