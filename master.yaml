@@ -135,7 +135,6 @@ resources:
       value_specs:
         port_security_enabled: false
 
-
   init:
     type: OS::Heat::MultipartMime
     properties:
@@ -170,6 +169,9 @@ resources:
                 $NODE_HOSTNAME: {get_param: hostname}
                 $NODE_DOMAIN: {get_param: domain_name}
               template: {get_file: fragments/etc-node-hosts}
+        - path: /etc/cloud.conf
+          permissions: 0755
+          content: {get_file: fragments/cloud.conf}
         - path: /usr/bin/docker-bridge-setup
           permissions: 0755
           content: {get_file: fragments/docker-bridge-setup.sh}
