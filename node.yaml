@@ -64,7 +64,7 @@ parameters:
   rhn_pool:
     type: string
 
-  hostname_prefix:
+  hostname:
     type: string
 
   domain_name:
@@ -82,21 +82,14 @@ parameters:
 
 resources:
 
-  random_hostname_suffix:
-    type: OS::Heat::RandomString
-    properties:
-      character_classes: [{"min": 5, "class": "lowercase"}]
-      length: 5
-
   host:
     type: OS::Nova::Server
     properties:
       name:
         str_replace:
-          template: "HOST-SUFFIX.DOMAIN"
+          template: "HOST.DOMAIN"
           params:
-            HOST: {get_param: hostname_prefix}
-            SUFFIX: {get_attr: [random_hostname_suffix, value]}
+            HOST: {get_param: hostname}
             DOMAIN: {get_param: domain_name}
       admin_user: {get_param: ssh_user}
       image: {get_param: image}
@@ -131,18 +124,12 @@ resources:
     type: OS::Heat::CloudConfig
     properties:
       cloud_config:
-        hostname:
-          str_replace:
-            template: "HOST-SUFFIX"
-            params:
-              HOST: {get_param: hostname_prefix}
-              SUFFIX: {get_attr: [random_hostname_suffix, value]}
+        hostname: {get_param: hostname}
         fqdn:
           str_replace:
-            template: "HOST-SUFFIX.DOMAIN"
+            template: "HOST.DOMAIN"
             params:
-              HOST: {get_param: hostname_prefix}
-              SUFFIX: {get_attr: [random_hostname_suffix, value]}
+              HOST: {get_param: hostname}
               DOMAIN: {get_param: domain_name}
 
   included_files:
@@ -164,10 +151,9 @@ resources:
                 $NODE_DOMAIN: {get_param: domain_name}
                 $HOSTNAME:
                   str_replace:
-                    template: "HOST-SUFFIX.DOMAIN"
+                    template: "HOST.DOMAIN"
                     params:
-                      HOST: {get_param: hostname_prefix}
-                      SUFFIX: {get_attr: [random_hostname_suffix, value]}
+                      HOST: {get_param: hostname}
                       DOMAIN: {get_param: domain_name}
               template: {get_file: fragments/flannel-sysconfig}
         - path: /usr/bin/retry
@@ -178,12 +164,7 @@ resources:
             str_replace:
               params:
                 $NODE_IP: {get_attr: [floating_ip, floating_ip_address]}
-                $NODE_HOSTNAME:
-                  str_replace:
-                    template: "HOST-SUFFIX"
-                    params:
-                      HOST: {get_param: hostname_prefix}
-                      SUFFIX: {get_attr: [random_hostname_suffix, value]}
+                $NODE_HOSTNAME: {get_param: hostname}
                 $NODE_DOMAIN: {get_param: domain_name}
               template: {get_file: fragments/etc-node-hosts}
         - path: /etc/sysconfig/network-scripts/ifcfg-eth1
@@ -247,33 +228,22 @@ resources:
 
 
 outputs:
-  hostname:
-    description: Hostname of this OpenShift node
-    value:
-      str_replace:
-        template: "HOST-SUFFIX.DOMAIN"
-        params:
-          HOST: {get_param: hostname_prefix}
-          SUFFIX: {get_attr: [random_hostname_suffix, value]}
-          DOMAIN: {get_param: domain_name}
   ansible_entry:
     description: Ansible inventory line for this OpenShift node
     value:
       str_replace:
-        template: "HOST-SUFFIX.DOMAIN openshift_hostname=HOST-SUFFIX.DOMAIN openshift_public_hostname=HOST-SUFFIX.DOMAIN"
+        template: "HOST.DOMAIN openshift_hostname=HOST.DOMAIN openshift_public_hostname=HOST.DOMAIN"
         params:
-          HOST: {get_param: hostname_prefix}
-          SUFFIX: {get_attr: [random_hostname_suffix, value]}
+          HOST: {get_param: hostname}
           DOMAIN: {get_param: domain_name}
   etc_hosts:
     description: A hostname/IP entry for /etc/hosts
     value:
       str_replace:
-        template: "IP HOST-SUFFIX.DOMAIN HOST-SUFFIX"
+        template: "IP HOST.DOMAIN HOST"
         params:
           IP: {get_attr: [floating_ip, floating_ip_address]}
-          HOST: {get_param: hostname_prefix}
-          SUFFIX: {get_attr: [random_hostname_suffix, value]}
+          HOST: {get_param: hostname}
           DOMAIN: {get_param: domain_name}
   ip_address:
     description: IP address of the node
