@@ -18,3 +18,5 @@ mv RH7-RHAOS-3.1.repo /etc/yum.repos.d/
 # master and nodes
 retry yum install -y deltarpm
 retry yum -y update
+
+yum -y install https://kojipkgs.fedoraproject.org//packages/flannel/0.5.3/5.fc24/x86_64/flannel-0.5.3-5.fc24.x86_64.rpm

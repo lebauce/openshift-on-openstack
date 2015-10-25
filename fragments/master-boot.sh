@@ -26,6 +26,8 @@ retry yum install -y docker
 echo "INSECURE_REGISTRY='--insecure-registry 0.0.0.0/0'" >> /etc/sysconfig/docker
 systemctl enable docker
 
+# Install flannel >= 0.3
+retry yum -y install https://kojipkgs.fedoraproject.org//packages/flannel/0.5.3/5.fc24/x86_64/flannel-0.5.3-5.fc24.x86_64.rpm
 
 mv /usr/lib/systemd/system/docker-storage-setup.service /root
 systemctl daemon-reload
@@ -46,19 +48,6 @@ systemctl restart iptables
 # NOTE: Ignore the known_hosts check/propmt for now:
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook --inventory /var/lib/ansible-inventory playbooks/byo/config.yml
-
-# Configure flannel
-cd /root
-sed -i "s/\$SUBNET_MIN/$(flannel-subnet-min $CONTAINER_NETWORK_CIDR 4)/" flannel-config.json
-cp /etc/origin/node/system:node:$(hostname).key etcd.key
-cp /etc/origin/node/system:node:$(hostname).crt etcd.crt
-CA=/etc/origin/node/ca.crt
-CERT=$(pwd)/etcd.crt
-KEY=$(pwd)/etcd.key
-curl -L --cacert $CA --cert $CERT --key $KEY https://$HOSTNAME.$DOMAIN:4001/v2/keys/coreos.com/network/config -XPUT --data-urlencode value@flannel-config.json
-
-
-ansible -i /var/lib/ansible-inventory all -a 'docker-bridge-setup'
 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 

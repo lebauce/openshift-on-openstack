@@ -20,7 +20,7 @@ osm_host_subnet_length=$CONTAINER_SUBNET_LENGTH
 openshift_master_portal_net=$CONTAINER_NETWORK_CIDR
 
 openshift_use_openshift_sdn=false
-
+openshift_use_flannel=true
 
 osm_use_cockpit=false
 
@@ -28,7 +28,13 @@ osm_use_cockpit=false
 [masters]
 $MASTER_HOSTNAME.$DOMAINNAME openshift_hostname=$MASTER_HOSTNAME.$DOMAINNAME openshit_public_hostname=$MASTER_HOSTNAME.$DOMAINNAME openshift_master_public_console_url=https://$MASTER_HOSTNAME.$DOMAINNAME:8443/console openshift_master_public_api_url=https://$MASTER_HOSTNAME.$DOMAINNAME:8443
 
+[masters:vars]
+flannel_interface=eth1
+
 # host group for nodes
 [nodes]
 $MASTER_HOSTNAME.$DOMAINNAME openshift_hostname=$MASTER_HOSTNAME.$DOMAINNAME openshit_public_hostname=$MASTER_HOSTNAME.$DOMAINNAME openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
 $NODE_HOSTNAMES
+
+[nodes:vars]
+flannel_interface=eth1
