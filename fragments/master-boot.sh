@@ -70,7 +70,8 @@ ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-depl
 ansible -i /var/lib/ansible-inventory nodes  -a "docker pull wordpress"
 ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift/mysql-55-centos7"
 
-su root -c 'oadm manage-node "$(hostname)" --schedulable=true'
+ansible -i /var/lib/ansible-inventory nodes  -a "rm /etc/sysconfig/network-scripts/ifcfg-eth1"
+ansible -i /var/lib/ansible-inventory nodes  -a 'sed -i "s/requiretty/!requiretty/" /etc/sudoers'
 
 su root -c 'oadm manage-node "$(hostname)" --schedulable=true'
 
