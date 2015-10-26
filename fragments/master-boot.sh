@@ -57,10 +57,14 @@ systemctl restart atomic-openshift-master
 ansible -i /var/lib/ansible-inventory nodes  -a "sed -i 's/:\${version}/:latest/' /etc/origin/node/node-config.yaml"
 ansible -i /var/lib/ansible-inventory nodes  -a "systemctl restart atomic-openshift-node"
 
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-pod:latest"
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-docker-registry:latest"
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-haproxy-router:latest"
 
-docker pull openshift3/ose-pod:latest
-docker pull openshift3/ose-docker-registry:latest
-docker pull openshift3/ose-haproxy-router:latest
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-deployer:latest"
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull wordpress"
+ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift/mysql-55-centos7"
+
 oadm manage-node "$(hostname)" --schedulable=true
 
 CA=/etc/origin/master
