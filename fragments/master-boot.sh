@@ -12,8 +12,8 @@ sed -i -e 's/^PEERDNS.*/PEERDNS="no"/' /etc/sysconfig/network-scripts/ifcfg-eth0
 
 # Remove nodes
 su root -c "kubectl delete node openshift-master.example.com"
-su root -c "kubectl delete node openshift-node-ooxey.example.com"
-su root -c "kubectl delete node openshift-node-tfykn.example.com"
+su root -c "kubectl delete node openshift-node-ccrgv.example.com"
+su root -c "kubectl delete node openshift-node-dvcna.example.com"
 
 # Enable external connectivity
 iptables -I OS_FIREWALL_ALLOW -p tcp -m tcp --dport 1936 -j ACCEPT
@@ -46,21 +46,21 @@ service atomic-openshift-node restart || true
 iptables -F
 
 # Restart openshift services on nodes
-scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-ooxey.example.com:/tmp
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo setenforce 0 || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo service flanneld restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo service docker restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo service atomic-openshift-node restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ooxey.example.com sudo iptables -F || true
+scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-ccrgv.example.com:/tmp
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo setenforce 0 || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo service flanneld restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo service docker restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo service atomic-openshift-node restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo iptables -F || true
 
-scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-tfykn.example.com:/tmp
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo setenforce 0 || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo service flanneld restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo service docker restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo service atomic-openshift-node restart || true
-ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-tfykn.example.com sudo iptables -F || true
+scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-dvcna.example.com:/tmp
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo setenforce 0 || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo service flanneld restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo service docker restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo service atomic-openshift-node restart || true
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo iptables -F || true
 
 export OS_AUTH_URL=`grep auth-url /etc/cloud.conf | cut -f 3 -d ' '`
 export OS_USERNAME=`grep username /etc/cloud.conf | cut -f 3 -d ' '`
