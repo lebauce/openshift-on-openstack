@@ -39,6 +39,7 @@ systemctl daemon-reload
 retry yum -y install ansible
 
 cd /root/
+git clone https://github.com/openshift/origin.git
 git clone "$OPENSHIFT_ANSIBLE_GIT_URL" openshift-ansible
 cd openshift-ansible
 git checkout "$OPENSHIFT_ANSIBLE_GIT_REV"
