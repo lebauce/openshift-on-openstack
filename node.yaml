@@ -142,6 +142,9 @@ resources:
         - path: /usr/bin/docker-bridge-setup
           permissions: 0755
           content: {get_file: fragments/docker-bridge-setup.sh}
+        - path: /etc/cloud.conf
+          permissions: 0755
+          content: {get_file: fragments/cloud.conf}
         - path: /root/flannel-sysconfig
           permissions: 0644
           content:
