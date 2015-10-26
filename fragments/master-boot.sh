@@ -70,22 +70,22 @@ ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift3/ose-depl
 ansible -i /var/lib/ansible-inventory nodes  -a "docker pull wordpress"
 ansible -i /var/lib/ansible-inventory nodes  -a "docker pull openshift/mysql-55-centos7"
 
-oadm manage-node "$(hostname)" --schedulable=true
+su root -c 'oadm manage-node "$(hostname)" --schedulable=true'
+
+su root -c 'oadm manage-node "$(hostname)" --schedulable=true'
 
 CA=/etc/origin/master
-
-oadm ca create-server-cert --signer-cert=$CA/ca.crt --signer-key=$CA/ca.key --signer-serial=$CA/ca.serial.txt --hostnames='*.cloudapps.$DOMAIN' --cert=cloudapps.crt --key=cloudapps.key
+su root -c "oadm ca create-server-cert --signer-cert=$CA/ca.crt --signer-key=$CA/ca.key --signer-serial=$CA/ca.serial.txt --hostnames='*.cloudapps.$DOMAIN' --cert=cloudapps.crt --key=cloudapps.key"
 
 cat cloudapps.crt cloudapps.key $CA/ca.crt > cloudapps.router.pem
 
-oadm router --replicas=1 --default-cert=cloudapps.router.pem --credentials=/etc/origin/master/openshift-router.kubeconfig --selector='region=infra' --service-account=router --images='openshift3/ose-${component}:latest'
+su root -c "oadm router --replicas=1 --default-cert=cloudapps.router.pem --credentials=/etc/origin/master/openshift-router.kubeconfig --selector='region=infra' --service-account=router --images='openshift3/ose-${component}:latest'"
 
-oadm registry --create --config=/etc/origin/master/admin.kubeconfig --credentials=/etc/origin/master/openshift-registry.kubeconfig --selector="region=infra" --images='openshift3/ose-${component}:latest'
-
+su root -c "oadm registry --create --config=/etc/origin/master/admin.kubeconfig --credentials=/etc/origin/master/openshift-registry.kubeconfig --selector='region=infra' --images='openshift3/ose-${component}:latest'"
 
 sleep 60
 
-oadm manage-node "$(hostname)" --schedulable=false
+su root -c 'oadm manage-node "$(hostname)" --schedulable=false'
 
 htpasswd -b /etc/openshift/openshift-passwd admin admin
 su root -c "oadm policy add-role-to-user cluster-admin admin"
