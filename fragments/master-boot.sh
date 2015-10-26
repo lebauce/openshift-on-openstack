@@ -29,6 +29,10 @@ systemctl enable docker
 # Install flannel >= 0.3
 retry yum -y install https://kojipkgs.fedoraproject.org//packages/flannel/0.5.3/5.fc24/x86_64/flannel-0.5.3-5.fc24.x86_64.rpm
 
+# Install openstack nova and cinder clients
+yum install -y https://rdoproject.org/repos/rdo-release.rpm
+yum install -y python-novaclient python-cinderclient
+
 mv /usr/lib/systemd/system/docker-storage-setup.service /root
 systemctl daemon-reload
 
