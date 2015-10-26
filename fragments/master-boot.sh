@@ -27,7 +27,7 @@ conf['kubernetesMasterConfig']['apiServerArguments'] = { 'cloud-provider': [ 'op
 yaml.dump(conf, open("/etc/origin/master/master-config.yaml", "w"))
 EOF
 
-cat > node-config.yaml <<EOF
+cat > /tmp/node-config.yaml <<EOF
 kubeletArguments:
   cloud-provider:
     - "openstack"
@@ -35,7 +35,7 @@ kubeletArguments:
     - "/etc/cloud.conf"
 EOF
 
-cat node-config.yaml >> /etc/origin/node/node-config.yaml
+cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml
 
 # Restart openshift services on master
 setenforce 0
@@ -46,7 +46,9 @@ service atomic-openshift-node restart || true
 iptables -F
 
 # Restart openshift services on nodes
-scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-ccrgv.example.com:/tmp
+
+scp -o StrictHostKeyChecking=no /etc/resolv.conf /tmp/node-config.yaml cloud-user@openshift-node-ccrgv.example.com:/tmp
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo bash -c '"cp /tmp/resolv.conf /etc/resolv.conf"'
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo setenforce 0 || true
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo service flanneld restart || true
@@ -54,7 +56,8 @@ ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo service atomic-openshift-node restart || true
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-ccrgv.example.com sudo iptables -F || true
 
-scp -o StrictHostKeyChecking=no node-config.yaml cloud-user@openshift-node-dvcna.example.com:/tmp
+scp -o StrictHostKeyChecking=no /etc/resolv.conf /tmp/node-config.yaml cloud-user@openshift-node-dvcna.example.com:/tmp
+ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo bash -c '"cp /tmp/resolv.conf /etc/resolv.conf"'
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo bash -c '"cat /tmp/node-config.yaml >> /etc/origin/node/node-config.yaml"'
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo setenforce 0 || true
 ssh -o StrictHostKeyChecking=no cloud-user@openshift-node-dvcna.example.com sudo service flanneld restart || true
