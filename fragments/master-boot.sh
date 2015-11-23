@@ -56,7 +56,7 @@ if ! rpm -q epel-release-7-5;then
         || notify_failure "could not install EPEL"
 fi
 sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
-retry yum -y --enablerepo=epel install ansible || notify_failure "could not install ansible"
+retry yum -y --enablerepo=epel install ansible pyOpenSSL || notify_failure "could not install ansible"
 
 git clone "$OPENSHIFT_ANSIBLE_GIT_URL" openshift-ansible \
     || notify_failure "could not clone openshift-ansible"
