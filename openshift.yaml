@@ -147,6 +147,47 @@ parameters:
       Maximum number of openshift nodes if autoscaling is enabled.
     default: 5
 
+  os_auth_url:
+    type: string
+    description: >
+      The Openstack authentication URL to be used by Openshift
+    default: ''
+
+  os_username:
+    type: string
+    description: >
+      The Openstack username to be used by Openshift
+    default: ''
+
+  os_password:
+    type: string
+    description: >
+      The Openstack password to be used by Openshift
+    hidden: true
+    default: ''
+
+  os_tenant_id:
+    type: string
+    description: >
+      The Openstack tenant ID to by used by Openshift
+    default: ''
+
+  os_region_name:
+    type: string
+    description: >
+      The Openstack region name to by used by Openshift
+    default: ''
+
+  identity_provider:
+    type: string
+    description: >
+      The Openstack region name to by used by Openshift
+    default: 'htpasswd_auth'
+    constraints:
+      - allowed_values:
+        - htpasswd_auth
+        - keystone_auth
+
 resources:
 
   fixed_network:
@@ -202,6 +243,12 @@ resources:
       rhn_username: {get_param: rhn_username}
       rhn_password: {get_param: rhn_password}
       rhn_pool: {get_param: rhn_pool}
+      os_auth_url: {get_param: os_auth_url}
+      os_username: {get_param: os_username}
+      os_password: {get_param: os_password}
+      os_tenant_id: {get_param: os_tenant_id}
+      os_region_name: {get_param: os_region_name}
+      identity_provider: {get_param: identity_provider}
       deployment_type: {get_param: deployment_type}
       docker_volume_size: {get_param: master_docker_volume_size_gb}
       floating_ip: {get_attr: [master_floating_ip, floating_ip_address]}

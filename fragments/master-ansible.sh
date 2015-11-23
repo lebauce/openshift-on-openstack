@@ -80,6 +80,12 @@ if [ -e /usr/lib/systemd/system/docker-storage-setup.service ]; then
     systemctl daemon-reload
 fi
 
+# Export Openstack environment variables
+export OS_USERNAME=$OS_USERNAME
+export OS_PASSWORD=$OS_PASSWORD
+export OS_AUTH_URL=$OS_AUTH_URL
+export OS_TENANT_ID=$OS_TENANT_ID
+
 # NOTE: Ignore the known_hosts check/propmt for now:
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook --inventory /var/lib/ansible-inventory $HOME/openshift-ansible/playbooks/byo/config.yml
