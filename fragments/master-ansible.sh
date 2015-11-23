@@ -97,6 +97,17 @@ export OS_TENANT_ID=$OS_TENANT_ID
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook --inventory /var/lib/ansible/inventory $HOME/openshift-ansible/playbooks/byo/config.yml
 
+for file in ca.crt ca.key
+do
+    fullpath="/etc/origin/master/$file"
+    if [ -f "/etc/origin/master/$file" ]
+    then
+        $WC_NOTIFY --data-binary "{\"status\": \"SUCCESS\", \"reason\": \"$file\", \"id\": \"$file\", \"data\": \"`cat $fullpath | tr '\n' '|'`\"}"
+    else
+        $WC_NOTIFY --data-binary "{\"status\": \"FAILURE\", \"reason\": \"Could not find file $fullpath\", \"data\": \"Could not find file $fullpath\"}"
+    fi
+done
+
 # Move docker-storage-setup unit file back in place
 mv $HOME/docker-storage-setup.service /usr/lib/systemd/system
 systemctl daemon-reload
