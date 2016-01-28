@@ -169,9 +169,7 @@ installation by running
 Current Status
 ==============
 
-1. The CA certificate used with OpenShift is currently not configurable.
-
-2. The apps cloud domain is hardcoded for now. We need to make this configurable.
+The CA certificate used with OpenShift is currently not configurable.
 
 Prebuild images
 ===============

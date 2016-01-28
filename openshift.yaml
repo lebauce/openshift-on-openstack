@@ -84,6 +84,12 @@ parameters:
     description: >
       The domain name that is going to be used as the base for all hostnames.
 
+  routing_subdomain:
+    type: string
+    description: >
+      The Openshift default routing subdomain.
+    default: "cloudapps"
+
   dns_hostname:
     type: string
     description: >
@@ -284,6 +290,7 @@ resources:
           docker_volume_size: {get_param: master_docker_volume_size_gb}
           hostname_prefix: {get_param: master_hostname_prefix}
           domain_name: {get_param: domain_name}
+          routing_subdomain: {get_param: routing_subdomain}
           ansible_public_key: {get_attr: [ansible_keys, public_key]}
           ansible_private_key: {get_attr: [ansible_keys, private_key]}
           openshift_ansible_git_url: {get_param: openshift_ansible_git_url}

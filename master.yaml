@@ -53,6 +53,9 @@ parameters:
   domain_name:
     type: string
 
+  routing_subdomain:
+    type: string
+
   ansible_public_key:
     type: string
 
@@ -305,6 +308,7 @@ resources:
           params:
             $ALL_MASTER_NODES: $all_master_nodes
             $DOMAINNAME: {get_param: domain_name}
+            $ROUTING_SUBDOMAIN: {get_param: routing_subdomain}
             $NODE_HOSTNAME: $node_hostname
             $SSH_USER: {get_param: ssh_user}
             $DEPLOYMENT_TYPE: {get_param: deployment_type}

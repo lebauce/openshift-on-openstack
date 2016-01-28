@@ -39,7 +39,7 @@ cat << EOF > /var/lib/ansible/group_vars/OSv3.yml
 ansible_ssh_user: $SSH_USER
 ansible_sudo: true
 deployment_type: $DEPLOYMENT_TYPE # deployment type valid values are origin, online and openshif-enterprise
-osm_default_subdomain: cloudapps.$DOMAINNAME # default subdomain to use for exposed routes
+osm_default_subdomain: $ROUTING_SUBDOMAIN.$DOMAINNAME # default subdomain to use for exposed routes
 EOF
 
 if [ -n "$LB_HOSTNAME" ]; then
