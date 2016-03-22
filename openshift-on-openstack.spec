@@ -30,6 +30,9 @@ cp -aR fragments/ %{buildroot}%{_datadir}/%{name}
 %{_bindir}/customize-disk-image
 
 %changelog
+* Tue Mar 22 2016 Sylvain Baubeau <sbaubeau@redhat.com> - 0.3.0-1
+- new package built with tito
+
 * Fri Feb 19 2016 Sylvain Baubeau <sbaubeau@redhat.com> - 0.2.0-1
 - Bump to version 0.2.0
 
