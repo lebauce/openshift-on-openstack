@@ -489,6 +489,11 @@ resources:
           system_update: {get_param: system_update}
           extra_repository_urls: {get_param: extra_repository_urls}
           extra_docker_repository_urls: {get_param: extra_docker_repository_urls}
+          os_auth_url: {get_param: os_auth_url}
+          os_username: {get_param: os_username}
+          os_password: {get_param: os_password}
+          os_tenant_name: {get_param: os_tenant_name}
+          os_region_name: {get_param: os_region_name}
 
   openshift_nodes:
     depends_on: external_router_interface
@@ -595,6 +600,36 @@ resources:
       period: 600
       evaluation_periods: 1
       threshold: 15
+      enabled: {get_param: autoscaling}
+      alarm_actions:
+        - {get_attr: [scale_down_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: lt
+
+  pods_alarm_high:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-up if the average number of pods is > 4 / node for 2 minutes
+      meter_name: pods
+      statistic: avg
+      period: 120
+      evaluation_periods: 1
+      threshold: 80
+      enabled: {get_param: autoscaling}
+      alarm_actions:
+        - {get_attr: [scale_up_policy, alarm_url]}
+      matching_metadata: {'metadata.user_metadata.stack': {get_param: "OS::stack_id"}}
+      comparison_operator: gt
+
+  pods_alarm_low:
+    type: OS::Ceilometer::Alarm
+    properties:
+      description: Scale-down if the average number of pods is < 1 / node for 10 minutes
+      meter_name: pods
+      statistic: avg
+      period: 600
+      evaluation_periods: 1
+      threshold: 20
       enabled: {get_param: autoscaling}
       alarm_actions:
         - {get_attr: [scale_down_policy, alarm_url]}
