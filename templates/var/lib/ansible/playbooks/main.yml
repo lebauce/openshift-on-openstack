@@ -84,6 +84,16 @@ cat << 'EOF' > /var/lib/os-apply-config/templates/var/lib/ansible/playbooks/main
   - name: Clean pods in DeadlineExceeded status
     shell: oc get pod | grep DeadlineExceeded | cut -f 1 -d " " | xargs -r oc delete pod
 
+<%#ansible_first_run%>
+<%#deploy_registry%>
+- hosts: masters
+  sudo: yes
+  tasks:
+  - name: Restart master service
+    service: name={{openshift.common.service_type}}-master state=restarted
+<%/deploy_registry%>
+<%/ansible_first_run%>
+
 <%#deploy_router%>
 <%#dedicated_lb%>
 - include: /var/lib/ansible/playbooks/haproxy.yml
